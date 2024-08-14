@@ -1,8 +1,10 @@
 "use client";
 import createUser from '@/api/signup';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
 const RegisterPage: React.FC = () => {
+    const router = useRouter();
 
     const handleRegisterSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -11,8 +13,13 @@ const RegisterPage: React.FC = () => {
         const name = target.elements.namedItem("name") as HTMLInputElement;
         const email = target.elements.namedItem("email") as HTMLInputElement;
         const password = target.elements.namedItem("password") as HTMLInputElement;
-
+        console.log(name,email,password)
         createUser({ name: name.value, email: email.value, password: password.value });
+
+        if(localStorage.getItem('jwtToken')){
+            router.push("/dashboard");
+        }
+
     };
 
     return (

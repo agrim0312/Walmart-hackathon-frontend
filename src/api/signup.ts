@@ -1,16 +1,19 @@
 import axios from 'axios';
 
-const createUser = async ({ name, email, password }:{
-    name:string,
-    email:string,
-    password:string
-}) => {
+export default async function createUser ({ name, email, password }:{
+    name:string;
+    email:string;
+    password:string;
+}){
   try {
-    console.log(name,email,password);
-    const response = await axios.post('http://127.0.0.1:8000/users/', {
-      name,
-      email,
-      password,
+    const response = await axios.post('http://127.0.0.1:8000/users',{
+      name:name,
+      email:email,
+      password:password
+    },{
+      headers: {
+        'Content-Type': 'application/json',// Ensure the content type is JSON
+      },
     });
 
     const { access_token } = response.data;
@@ -23,5 +26,3 @@ const createUser = async ({ name, email, password }:{
     console.error('Error creating user:', error.response ? error.response.data : error.message);
   }
 };
-
-export default createUser;
