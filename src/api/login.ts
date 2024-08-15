@@ -20,11 +20,12 @@ import axios from 'axios';
     // Store the token in local storage
     localStorage.setItem('jwtToken', access_token);
 
+    console.log('Response:', response.status);
     console.log('Token stored successfully:', access_token);
     return response;
   } catch (error:any) {
     console.error('Error logging in:', error.response ? error.response.data : error.message);
-    return error.response;
+    return error.response ? error.response.data : error.message;
   }
 };
 

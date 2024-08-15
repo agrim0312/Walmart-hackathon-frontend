@@ -18,6 +18,7 @@ const LoginPage: React.FC = () => {
     const password = target.elements.namedItem("password") as HTMLInputElement;
     
     const response = await LoginUser({ email: email.value, password: password.value });
+
         if(response.status === 200){
             router.push("/dashboard");
         }else{
