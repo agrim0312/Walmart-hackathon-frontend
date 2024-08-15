@@ -1,13 +1,17 @@
 "use client";
+import getRoutes from '@/api/getRoutes';
 import LocationCard from '@/components/card';
 import MyMap from '@/components/map';
 import AutocompleteSearchBox from '@/components/searchBar';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
 const SearchAndMapLayout = () => {
 
     const [selectedLocations, setSelectedLocations] = useState<any[]>([]);
     const [numVehicles, setNumVehicles] = useState<number>(0);
+    const [Myroutes, setMyRoutes] = useState<any[]>([]);
+    const router = useRouter();
 
     const handleSelect = (location:any) => {
         console.log('Selected location:', location);
@@ -26,8 +30,36 @@ const SearchAndMapLayout = () => {
         });
     };
 
-    const handleSubmission = () => {
-
+    const handleSubmission = async () => {
+      const data = {
+        num_locations: selectedLocations.length-1,
+        num_vehicles: numVehicles,
+        locations: selectedLocations.slice(0, -1).map((location) => location.center),
+        depot: selectedLocations[selectedLocations.length - 1].center
+      };
+      const response = await getRoutes({data});
+      if(response.status === 200){
+        console.log('HOF:', response.data.hof);
+        console.log("SELECTED LOCATIONS",selectedLocations);
+        const hof = response.data.hof;
+        let routes = [];
+        for(let lo=0;lo<numVehicles;lo++){
+          let prev = selectedLocations[selectedLocations.length - 1].center;
+          let route = [];
+          let i = lo;
+          while(i < hof.length){
+            route.push([prev,selectedLocations[hof[i]].center]);
+            prev = selectedLocations[hof[i]].center;
+            i += numVehicles;
+          }
+          route.push([prev,selectedLocations[selectedLocations.length - 1].center]);
+          routes.push(route);
+        }
+        console.log("ROUTES",routes);
+        setMyRoutes(routes);
+      }else if(response.status === 401){
+        router.push('/login');
+      }
     };
 
     const handleNumVehiclesChange = (event:any) => {
@@ -53,7 +85,7 @@ const SearchAndMapLayout = () => {
               />
             </div>
             <AutocompleteSearchBox onSelect={handleSelect} />
-            <button onSubmit={handleSubmission} className='bg-blue-600 rounded-md self-center p-4'>Submit</button>
+            <button onClick={handleSubmission} className='bg-blue-600 rounded-md self-center p-4'>Submit</button>
             <h2 className='mt-3'>Note: Add Depot Location at the last</h2>
         </div>
         
@@ -77,7 +109,7 @@ const SearchAndMapLayout = () => {
         <div className="border rounded-md h-full">
           {/* Map Placeholder */}
           <div className="h-full w-full bg-gray-300 flex items-center justify-center">
-            <MyMap selectedLocations={selectedLocations}/>
+            <MyMap selectedLocations={selectedLocations} routes={Myroutes}/>
           </div>
         </div>
       </div>
