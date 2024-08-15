@@ -22,7 +22,9 @@ export default async function createUser ({ name, email, password }:{
     localStorage.setItem('jwtToken', access_token);
 
     console.log('User created successfully and token stored:', access_token);
+    return response;
   } catch (error:any) {
     console.error('Error creating user:', error.response ? error.response.data : error.message);
+    return error.response;
   }
 };

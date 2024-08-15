@@ -6,19 +6,23 @@ import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { UserAuthForm } from "@/components/user-auth-form";
+import { useRouter } from "next/navigation";
 
 const LoginPage: React.FC = () => {
-  const handleLoginSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const router = useRouter();
+  const handleLoginSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const target = e.target as HTMLFormElement;
     
     const email = target.elements.namedItem("email") as HTMLInputElement;
     const password = target.elements.namedItem("password") as HTMLInputElement;
     
-    LoginUser({ email: email.value, password: password.value });
-    if (localStorage.getItem("jwtToken")) {
-      window.location.href = "/dashboard";
-    }
+    const response = await LoginUser({ email: email.value, password: password.value });
+        if(response.status === 200){
+            router.push("/dashboard");
+        }else{
+            router.push("/signup");
+        }
   };
 
   return (
