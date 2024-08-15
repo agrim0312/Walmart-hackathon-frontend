@@ -1,118 +1,199 @@
 "use client";
-import getRoutes from '@/api/getRoutes';
-import LocationCard from '@/components/card';
-import MyMap from '@/components/map';
-import AutocompleteSearchBox from '@/components/searchBar';
-import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import getRoutes from "@/api/getRoutes";
+import LocationCard from "@/components/card";
+import MyMap from "@/components/map";
+import AutocompleteSearchBox from "@/components/searchBar";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+interface Location {
+  center: [number, number];
+  place_name: string;
+}
 
 const SearchAndMapLayout = () => {
+  const [destinations, setDestinations] = useState<Location[]>([]);
+  const [depotLocation, setDepotLocation] = useState<Location | null>(null);
+  const [numVehicles, setNumVehicles] = useState<number>(0);
+  const [routes, setRoutes] = useState<any[]>([]);
+  const [editingLocation, setEditingLocation] = useState<Location | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const router = useRouter();
+  const [maxLocations, setMaxLocations] = useState<number>(0);
+  const handleSelectDepot = (location: Location) => {
+    setDepotLocation(location);
+  };
 
-    const [selectedLocations, setSelectedLocations] = useState<any[]>([]);
-    const [numVehicles, setNumVehicles] = useState<number>(0);
-    const [Myroutes, setMyRoutes] = useState<any[]>([]);
-    const router = useRouter();
+  const handleSelectDestination = (location: Location) => {
+    setDestinations((prev) => [...prev, location]);
+  };
 
-    const handleSelect = (location:any) => {
-        console.log('Selected location:', location);
-        setSelectedLocations((prevLocations) => {
-            const updatedLocations = [...prevLocations, location];
-            console.log('Updated locations:', updatedLocations); // This will show the correct updated array
-            return updatedLocations;
-        });
-    };
+  const handleDeleteDestination = (index: number) => {
+    setDestinations((prev) => prev.filter((_, i) => i !== index));
+  };
 
-    const handleDelete = (index:number) => {
-        setSelectedLocations((prevLocations) => {
-            const updatedLocations = prevLocations.filter((_, i) => i !== index);
-            console.log('Updated locations:', updatedLocations); // This will show the correct updated array
-            return updatedLocations;
-        });
-    };
+  const handleEditLocation = (location: Location, isDepot: boolean) => {
+    setEditingLocation(location);
+    setIsEditDialogOpen(true);
+  };
 
-    const handleSubmission = async () => {
-      const data = {
-        num_locations: selectedLocations.length-1,
-        num_vehicles: numVehicles,
-        locations: selectedLocations.slice(0, -1).map((location) => location.center),
-        depot: selectedLocations[selectedLocations.length - 1].center
-      };
-      const response = await getRoutes({data});
-      if(response.status === 200){
-        console.log('HOF:', response.data.hof);
-        console.log("SELECTED LOCATIONS",selectedLocations);
-        const hof = response.data.hof;
-        let routes = [];
-        for(let lo=0;lo<numVehicles;lo++){
-          let prev = selectedLocations[selectedLocations.length - 1].center;
-          let route = [];
-          let i = lo;
-          while(i < hof.length){
-            route.push([prev,selectedLocations[hof[i]].center]);
-            prev = selectedLocations[hof[i]].center;
-            i += numVehicles;
-          }
-          route.push([prev,selectedLocations[selectedLocations.length - 1].center]);
-          routes.push(route);
-        }
-        console.log("ROUTES",routes);
-        setMyRoutes(routes);
-      }else if(response.status === 401){
-        router.push('/login');
-      }
-    };
-
-    const handleNumVehiclesChange = (event:any) => {
-        setNumVehicles(parseInt(event.target.value));
+  const handleSaveEdit = (newLocation: Location) => {
+    if (editingLocation === depotLocation) {
+      setDepotLocation(newLocation);
+    } else {
+      setDestinations((prev) =>
+        prev.map((loc) => (loc === editingLocation ? newLocation : loc))
+      );
     }
+    setIsEditDialogOpen(false);
+  };
+
+  const handleSubmission = async () => {
+    if (!depotLocation) return;
+
+    const data = {
+      num_locations: destinations.length,
+      num_vehicles: numVehicles,
+      locations: destinations.map((loc) => loc.center),
+      depot: depotLocation.center,
+    };
+
+    const response = await getRoutes({ data });
+    if (response.status === 200) {
+      const hof = response.data.hof;
+      let newRoutes = [];
+      for (let lo = 0; lo < numVehicles; lo++) {
+        let prev = depotLocation.center;
+        let route = [];
+        let i = lo;
+        while (i < hof.length) {
+          route.push([prev, destinations[hof[i]].center]);
+          prev = destinations[hof[i]].center;
+          i += numVehicles;
+        }
+        route.push([prev, depotLocation.center]);
+        newRoutes.push(route);
+      }
+      setRoutes(newRoutes);
+    } else if (response.status === 401) {
+      router.push("/login");
+    }
+  };
 
   return (
-    <div className="grid grid-cols-3 h-screen">
-      {/* Search Component (2/3 of the space) */}
-      <div className="col-span-1 p-4">
-        <div className="border rounded-md p-4">
-            {/* Input field for number of vehicles */}
-            <div className="mt-2 mb-2">
-              <label htmlFor="num-vehicles" className="block text-sm font-medium text-gray-300">
-                Number of Transport Vehicles
-              </label>
-              <input
-                id="num-vehicles"
-                type="number"
-                value={numVehicles}
-                onChange={handleNumVehiclesChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-black"
-              />
+    <div className="grid grid-cols-3 h-screen gap-4 p-4 bg-gray-100">
+      <div className="col-span-1 space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Route Configuration</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="num-vehicles" className="text-sm font-medium">
+                  Number of Transport Vehicles
+                </label>
+                <Input
+                  id="num-vehicles"
+                  type="number"
+                  value={numVehicles}
+                  onChange={(e) => setNumVehicles(parseInt(e.target.value))}
+                />
+              </div>
+              <div className="flex flex-col gap-2 w-full">
+                <div className="text-sm font-medium">
+                  Depot Location
+                  <AutocompleteSearchBox  onSelect={handleSelectDepot} />
+                </div>
+                <div className="text-sm -z-1 font-medium">
+                  Add Destination
+                  <AutocompleteSearchBox onSelect={handleSelectDestination} />
+                </div>
+              </div>
+              <Button onClick={handleSubmission} className="w-full">
+                Generate Routes
+              </Button>
             </div>
-            <AutocompleteSearchBox onSelect={handleSelect} />
-            <button onClick={handleSubmission} className='bg-blue-600 rounded-md self-center p-4'>Submit</button>
-            <h2 className='mt-3'>Note: Add Depot Location at the last</h2>
-        </div>
-        
-        <div className="mt-4">
-            {selectedLocations.length > 0 && (
-              <div className="overflow-y-auto max-h-[calc(100vh-10rem)]">
-                {selectedLocations.map((location, index) => (
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Locations</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {depotLocation && (
+                <div>
+                  <h3 className="font-medium">Depot Location</h3>
+                  <LocationCard
+                    location={depotLocation}
+                    onDelete={() => setDepotLocation(null)}
+                    onEdit={() => handleEditLocation(depotLocation, true)}
+                    isDepot
+                  />
+                </div>
+              )}
+              <Separator />
+              <div className="space-y-2 max-h-[calc(100vh-32rem)] overflow-y-auto">
+                <h3 className="font-medium">
+                  Destinations ({destinations.length})
+                </h3>
+                {destinations.map((location, index) => (
                   <LocationCard
                     key={index}
                     location={location}
-                    onDelete={() => handleDelete(index)}
+                    onDelete={() => handleDeleteDestination(index)}
+                    onEdit={() => handleEditLocation(location, false)}
                   />
                 ))}
               </div>
-            )}
-          </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Map Component (1/3 of the space) */}
-      <div className="col-span-2 p-4">
-        <div className="border rounded-md h-full">
-          {/* Map Placeholder */}
-          <div className="h-full w-full bg-gray-300 flex items-center justify-center">
-            <MyMap selectedLocations={selectedLocations} routes={Myroutes}/>
-          </div>
-        </div>
+      <div className="col-span-2">
+        <Card className="h-full">
+          <CardHeader>
+            <CardTitle>Route Map</CardTitle>
+          </CardHeader>
+          <CardContent className="h-[calc(100%-5rem)]">
+            <MyMap
+              selectedLocations={[
+                ...(depotLocation ? [depotLocation] : []),
+                ...destinations,
+              ]}
+              routes={routes}
+            />
+          </CardContent>
+        </Card>
       </div>
+
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Location</DialogTitle>
+          </DialogHeader>
+          <AutocompleteSearchBox
+            onSelect={(location) => {
+              handleSaveEdit(location);
+              setIsEditDialogOpen(false);
+            }}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
