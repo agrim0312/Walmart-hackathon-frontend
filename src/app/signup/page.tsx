@@ -1,40 +1,76 @@
 "use client";
-import createUser from '@/api/signup';
-import { useRouter } from 'next/navigation';
-import React from 'react';
+
+import React from "react";
+import createUser from "@/api/signup";
+import Image from "next/image";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { UserAuthForm } from "../../components/user-auth-form";
 
 const RegisterPage: React.FC = () => {
-    const router = useRouter();
+  const router = useRouter();
 
-    const handleRegisterSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const target = e.target as HTMLFormElement;
-        console.log("Signup Begin")
-        const name = target.elements.namedItem("name") as HTMLInputElement;
-        const email = target.elements.namedItem("email") as HTMLInputElement;
-        const password = target.elements.namedItem("password") as HTMLInputElement;
-        console.log(name,email,password)
-        createUser({ name: name.value, email: email.value, password: password.value });
+  const handleRegisterSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const target = e.target as HTMLFormElement;
+    
+    const name = target.elements.namedItem("name") as HTMLInputElement;
+    const email = target.elements.namedItem("email") as HTMLInputElement;
+    const password = target.elements.namedItem("password") as HTMLInputElement;
+    
+    createUser({ name: name.value, email: email.value, password: password.value });
 
-        if(localStorage.getItem('jwtToken')){
-            router.push("/dashboard");
-        }
+    if (localStorage.getItem("jwtToken")) {
+      router.push("/dashboard");
+    }
+  };
 
-    };
+  return (
+    <div className="flex min-h-screen">
+      <div className="flex flex-col justify-center items-center w-full lg:w-1/2 p-4 lg:p-8">
+        <div className="w-full max-w-md space-y-8">
+          <div className="flex flex-col space-y-2 text-center">
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Create an account
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Enter your details below to create your account
+            </p>
+          </div>
+          <UserAuthForm onSubmit={handleRegisterSubmit} isRegister={true} />
+          </div>
+      </div>
 
-    return (
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-            <form onSubmit={handleRegisterSubmit} className="text-black border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-                <input type="text" name="name" placeholder="Name" className="mb-7 p-3" />
-                <br />
-                <input type="email" name="email" placeholder="Email" className="mb-7 p-3" />
-                <br />
-                <input type="password" name="password" placeholder="Password" className="mb-7 p-3" />
-                <br />
-                <button type="submit" style={{ padding: "10px", width: "100%", color: "white", border: "none", borderRadius: "5px" }} className="bg-blue-600">Register</button>
-            </form>
+      <div className="hidden lg:flex flex-col justify-center items-center w-1/2 bg-violet-600 text-white p-8">
+        <div className="relative z-20 flex flex-col items-center text-lg font-medium">
+          <div className="flex text-3xl items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="mr-2 h-8 w-8"
+            >
+              <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" />
+            </svg>
+            VRO
+          </div>
+          <span className="text-white mt-2">Vehicle Route Optimiser</span>
         </div>
-    );
+      </div>
+
+      <Link
+        href="/login"
+        className={cn("absolute right-4 text-black top-4 md:right-8 md:top-8")}
+      >
+        Login
+      </Link>
+    </div>
+  );
 };
 
 export default RegisterPage;
