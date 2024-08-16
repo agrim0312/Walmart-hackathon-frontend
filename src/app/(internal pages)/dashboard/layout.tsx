@@ -2,7 +2,7 @@
 import getRoutes from "@/api/getRoutes";
 import LocationCard from "@/components/card";
 import MyMap from "@/components/map";
-import AutocompleteSearchBox from "@/components/searchBar";
+import AutocompleteSearchBox from "@/components/locationSearchBar";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,7 +14,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 
 interface Location {
@@ -30,7 +29,7 @@ const SearchAndMapLayout = () => {
   const [editingLocation, setEditingLocation] = useState<Location | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const router = useRouter();
-  const [maxLocations, setMaxLocations] = useState<number>(0);
+
   const handleSelectDepot = (location: Location) => {
     setDepotLocation(location);
   };
@@ -43,7 +42,7 @@ const SearchAndMapLayout = () => {
     setDestinations((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleEditLocation = (location: Location, isDepot: boolean) => {
+  const handleEditLocation = (location: Location) => {
     setEditingLocation(location);
     setIsEditDialogOpen(true);
   };
@@ -111,16 +110,18 @@ const SearchAndMapLayout = () => {
                   onChange={(e) => setNumVehicles(parseInt(e.target.value))}
                 />
               </div>
-              <div className="flex flex-col gap-2 w-full">
+              {!depotLocation && (
                 <div className="text-sm font-medium">
                   Depot Location
-                  <AutocompleteSearchBox  onSelect={handleSelectDepot} />
+                  <AutocompleteSearchBox onSelect={handleSelectDepot} />
                 </div>
-                <div className="text-sm -z-1 font-medium">
+              )}
+              {depotLocation && (
+                <div className="text-sm font-medium">
                   Add Destination
                   <AutocompleteSearchBox onSelect={handleSelectDestination} />
                 </div>
-              </div>
+              )}
               <Button onClick={handleSubmission} className="w-full">
                 Generate Routes
               </Button>
@@ -128,7 +129,7 @@ const SearchAndMapLayout = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="max-h-[370px] overflow-y-auto">
           <CardHeader>
             <CardTitle>Locations</CardTitle>
           </CardHeader>
@@ -140,13 +141,13 @@ const SearchAndMapLayout = () => {
                   <LocationCard
                     location={depotLocation}
                     onDelete={() => setDepotLocation(null)}
-                    onEdit={() => handleEditLocation(depotLocation, true)}
+                    onEdit={() => handleEditLocation(depotLocation)}
                     isDepot
                   />
                 </div>
               )}
               <Separator />
-              <div className="space-y-2 max-h-[calc(100vh-32rem)] overflow-y-auto">
+              <div className="space-y-2  ">
                 <h3 className="font-medium">
                   Destinations ({destinations.length})
                 </h3>
@@ -155,7 +156,7 @@ const SearchAndMapLayout = () => {
                     key={index}
                     location={location}
                     onDelete={() => handleDeleteDestination(index)}
-                    onEdit={() => handleEditLocation(location, false)}
+                    onEdit={() => handleEditLocation(location)}
                   />
                 ))}
               </div>

@@ -17,6 +17,24 @@ interface MyMapProps {
   routes: Route[];
 }
 
+function getRandomColor() {
+  const predefinedColors = [
+    "#FF5733", // Red-Orange
+    "#33FF57", // Green
+    "#3357FF", // Blue
+    "#FF33A8", // Pink
+    "#FFC300", // Yellow
+    "#33FFF6", // Cyan
+    "#8E44AD", // Purple
+    "#E74C3C", // Red
+    "#2ECC71", // Green
+    "#3498DB", // Light Blue
+  ];
+
+  const randomIndex = Math.floor(Math.random() * predefinedColors.length);
+  return predefinedColors[randomIndex];
+}
+
 const MyMap :React.FC<MyMapProps> = ( {selectedLocations,  routes}) => {
   const MAPBOX_TOKEN = 'pk.eyJ1IjoiYWdyaW0wMzEyIiwiYSI6ImNscW01eDYweDAyNWwya213cGR2Z2JyZmkifQ.VhMNA0js_M-_c9P3bMmqrw'; // Replace with your Mapbox access token
 
@@ -42,11 +60,11 @@ const MyMap :React.FC<MyMapProps> = ( {selectedLocations,  routes}) => {
     <Map
     ref={mapRef}
       initialViewState={{
-        latitude: 37.7749,
-        longitude: -122.4194,
+        latitude: 31.3069,
+        longitude: 75.5793,
         zoom: 10
       }}
-      style={{ width: '100%', height: '100%' }}
+      style={{ width: '100%', height: '90%' }}
       mapStyle="mapbox://styles/mapbox/streets-v11"
       mapboxAccessToken={MAPBOX_TOKEN}
     >
@@ -64,7 +82,7 @@ const MyMap :React.FC<MyMapProps> = ( {selectedLocations,  routes}) => {
               coordinates: route.flatMap((segment: [number, number][]) => segment), // Properly typed segment
             },
             properties: {
-              color: route.color || '#FF0000', // Default color if not specified
+              color: getRandomColor() || '#FF0000', // Default color if not specified
             },
           }}
         >

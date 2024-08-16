@@ -95,16 +95,17 @@ const AutocompleteSearchBox = ({
           line-height: 20px;
           background-color: white;
           box-shadow: none;
-        }
-        .mapboxgl-ctrl-geocoder .suggestions {
-          z-index: 10 !important;
+          position: relative;
+          z-index: 1;
         }
         .mapboxgl-ctrl-geocoder--input {
           height: 36px;
-          padding: 6px 35px 6px 10px;
+          padding: 6px 35px 6px 32px !important;
           border-radius: 4px;
           border: 1px solid #ccc;
           background-color: white;
+          position: relative;
+          z-index: 2;
         }
         .mapboxgl-ctrl-geocoder--input:focus {
           outline: none;
@@ -117,6 +118,9 @@ const AutocompleteSearchBox = ({
           border-top: none;
           top: 100%;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          position: absolute;
+          z-index: 3;
+          width: 100%;
         }
         .mapboxgl-ctrl-geocoder .suggestions > li > a {
           padding: 6px 12px;
@@ -128,12 +132,12 @@ const AutocompleteSearchBox = ({
         }
         .mapboxgl-ctrl-geocoder--icon-search {
           top: 8px;
+          left: 8px;
+          z-index: 3;
         }
         .mapboxgl-ctrl-geocoder--button {
           background-color: transparent;
-        }
-        .mapboxgl-ctrl-geocoder--input {
-          padding-left: 32px !important;
+          z-index: 3;
         }
       `}</style>
     </div>
