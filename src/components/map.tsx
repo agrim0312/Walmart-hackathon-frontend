@@ -49,7 +49,7 @@ const MyMap :React.FC<MyMapProps> = ( {selectedLocations,  routes}) => {
         const [longitude, latitude] = lastLocation.center;
         mapRef.current.flyTo({
           center: [longitude, latitude],
-          zoom: 14,
+          zoom: 6,
           essential: true,
         });
       }
@@ -70,7 +70,8 @@ const MyMap :React.FC<MyMapProps> = ( {selectedLocations,  routes}) => {
     >
       <NavigationControl position="top-right" />
        {/* Plot the routes on the map */}
-       {routes.map((route:any, index:number) => (
+      
+      {routes.map((route:any, index:number) => (
         <Source
           key={index}
           id={`route-${index}`}
@@ -79,10 +80,7 @@ const MyMap :React.FC<MyMapProps> = ( {selectedLocations,  routes}) => {
             type: 'Feature',
             geometry: {
               type: 'LineString',
-              coordinates: route.flatMap((segment: [number, number][]) => segment), // Properly typed segment
-            },
-            properties: {
-              color: getRandomColor() || '#FF0000', // Default color if not specified
+              coordinates: route,
             },
           }}
         >
@@ -96,13 +94,13 @@ const MyMap :React.FC<MyMapProps> = ( {selectedLocations,  routes}) => {
                 'line-cap': 'round',
               },
               paint: {
-                'line-color': ['get', 'color'],
+                'line-color': getRandomColor(),
                 'line-width': 5,
               },
             }
           } />
         </Source>
-      ))}
+    ))}
 
       {selectedLocations.length > 0 && selectedLocations.map((location:any, index:any) => (
         location.center && location.center.length === 2 && (

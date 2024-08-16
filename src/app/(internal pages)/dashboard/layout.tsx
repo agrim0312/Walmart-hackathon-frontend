@@ -15,6 +15,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import getDirections from "@/api/getDirections";
+import Spinner from "@/components/ui/spinner";
 
 interface Location {
   center: [number, number];
@@ -28,6 +30,7 @@ const SearchAndMapLayout = () => {
   const [routes, setRoutes] = useState<any[]>([]);
   const [editingLocation, setEditingLocation] = useState<Location | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleSelectDepot = (location: Location) => {
@@ -58,9 +61,27 @@ const SearchAndMapLayout = () => {
     setIsEditDialogOpen(false);
   };
 
+  const fetchRouteForVehicle = async (vehicleIndex: number, hof: number[], locations: [number, number][], depot: [number, number]) => {
+    const segments = [];
+    let prev = depot;
+    let i = vehicleIndex;
+    while (i < hof.length) {
+        const start = prev;
+        const end = locations[hof[i]];
+        const segment = await getDirections([start, end]);  // Use getRoute to fetch each segment
+        segments.push(...segment);
+        prev = end;
+        i += numVehicles;
+    }
+    const lastSegment = await getDirections([prev, depot]);  // Fetch route back to the depot
+    segments.push(...lastSegment);
+    return segments;
+};
+
   const handleSubmission = async () => {
     if (!depotLocation) return;
 
+    setIsLoading(true);
     const data = {
       num_locations: destinations.length,
       num_vehicles: numVehicles,
@@ -71,23 +92,14 @@ const SearchAndMapLayout = () => {
     const response = await getRoutes({ data });
     if (response.status === 200) {
       const hof = response.data.hof;
-      let newRoutes = [];
-      for (let lo = 0; lo < numVehicles; lo++) {
-        let prev = depotLocation.center;
-        let route = [];
-        let i = lo;
-        while (i < hof.length) {
-          route.push([prev, destinations[hof[i]].center]);
-          prev = destinations[hof[i]].center;
-          i += numVehicles;
-        }
-        route.push([prev, depotLocation.center]);
-        newRoutes.push(route);
-      }
-      setRoutes(newRoutes);
+      const fetchedRoutes = await Promise.all(
+        hof.map((_:any, index:number) => fetchRouteForVehicle(index, hof, data.locations, data.depot))
+      );
+      setRoutes(fetchedRoutes);
     } else if (response.status === 401) {
       router.push("/login");
     }
+    setIsLoading(false);
   };
 
   return (
@@ -123,7 +135,7 @@ const SearchAndMapLayout = () => {
                 </div>
               )}
               <Button onClick={handleSubmission} className="w-full">
-                Generate Routes
+              {isLoading ? <Spinner size="sm" /> : "Generate Routes"}
               </Button>
             </div>
           </CardContent>
