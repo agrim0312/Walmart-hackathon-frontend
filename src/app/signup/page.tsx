@@ -7,6 +7,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { UserAuthForm } from "../../components/user-auth-form";
+import { Truck } from "lucide-react";
 
 const RegisterPage: React.FC = () => {
   const router = useRouter();
@@ -14,12 +15,16 @@ const RegisterPage: React.FC = () => {
   const handleRegisterSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const target = e.target as HTMLFormElement;
-    
+
     const name = target.elements.namedItem("name") as HTMLInputElement;
     const email = target.elements.namedItem("email") as HTMLInputElement;
     const password = target.elements.namedItem("password") as HTMLInputElement;
-    
-    createUser({ name: name.value, email: email.value, password: password.value });
+
+    createUser({
+      name: name.value,
+      email: email.value,
+      password: password.value,
+    });
 
     if (localStorage.getItem("jwtToken")) {
       router.push("/dashboard");
@@ -39,24 +44,13 @@ const RegisterPage: React.FC = () => {
             </p>
           </div>
           <UserAuthForm onSubmit={handleRegisterSubmit} isRegister={true} />
-          </div>
+        </div>
       </div>
 
       <div className="hidden lg:flex flex-col justify-center items-center w-1/2 bg-violet-600 text-white p-8">
         <div className="relative z-20 flex flex-col items-center text-lg font-medium">
           <div className="flex text-3xl items-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="mr-2 h-8 w-8"
-            >
-              <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" />
-            </svg>
+            <Truck className="w-12 h-12 mr-2" />
             VRO
           </div>
           <span className="text-white mt-2">Vehicle Route Optimiser</span>
@@ -65,7 +59,7 @@ const RegisterPage: React.FC = () => {
 
       <Link
         href="/login"
-        className={cn("absolute right-4 text-black top-4 md:right-8 md:top-8")}
+        className={cn("absolute text-white right-4 font-semibold top-4 md:right-8 md:top-8")}
       >
         Login
       </Link>

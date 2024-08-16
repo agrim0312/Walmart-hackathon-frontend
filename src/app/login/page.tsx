@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { UserAuthForm } from "@/components/user-auth-form";
 import { useRouter } from "next/navigation";
 import { LiaRouteSolid } from "react-icons/lia";
+import { Truck } from "lucide-react";
 
 const LoginPage: React.FC = () => {
   const router = useRouter();
@@ -49,7 +50,7 @@ const LoginPage: React.FC = () => {
       <div className="hidden lg:flex flex-col justify-center items-center w-1/2 bg-violet-600 text-white p-8">
         <div className="relative z-20 flex flex-col items-center text-lg font-medium">
           <div className="flex text-3xl items-center">
-            <LiaRouteSolid className="w-12 h-12" />
+          <Truck className="mr-2 w-12 h-12 " />
             VRO
           </div>
           <span className="text-white text-xl font-semibold mt-2">Vehicle Route Optimiser</span>
@@ -58,7 +59,7 @@ const LoginPage: React.FC = () => {
 
       <Link
         href="/signup"
-        className={cn("absolute right-4 text-white top-4 md:right-8 md:top-8")}
+        className={cn("absolute right-4 font-semibold text-white top-4 md:right-8 md:top-8")}
       >
         Register
       </Link>

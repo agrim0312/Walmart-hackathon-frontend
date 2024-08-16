@@ -101,7 +101,7 @@ const AutocompleteSearchBox = ({
         .mapboxgl-ctrl-geocoder--input {
           height: 36px;
           padding: 6px 35px 6px 32px !important;
-          border-radius: 4px;
+          border-radius: 8px;
           border: 1px solid #ccc;
           background-color: white;
           position: relative;
