@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import getDirections from "@/api/getDirections";
 import Spinner from "@/components/ui/spinner";
+import toast, { Toaster } from "react-hot-toast";
 
 interface Location {
   center: [number, number];
@@ -95,10 +96,13 @@ const SearchAndMapLayout = () => {
       const fetchedRoutes = await Promise.all(
         hof.map((_:any, index:number) => fetchRouteForVehicle(index, hof, data.locations, data.depot))
       );
+      toast.success("Routes plotted successfully");
       setRoutes(fetchedRoutes);
+
     } else if (response.status === 401) {
       router.push("/login");
     }
+    
     setIsLoading(false);
   };
 
@@ -207,6 +211,7 @@ const SearchAndMapLayout = () => {
           />
         </DialogContent>
       </Dialog>
+      <Toaster />
     </div>
   );
 };
