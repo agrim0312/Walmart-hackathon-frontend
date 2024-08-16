@@ -8,7 +8,6 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
   DialogContent,
@@ -18,7 +17,7 @@ import {
 import getDirections from "@/api/getDirections";
 import Spinner from "@/components/ui/spinner";
 import toast, { Toaster } from "react-hot-toast";
-import Navbar from "@/components/Navbar";
+import DashBoardNavbar from "@/components/dashboardNavbar";
 
 interface Location {
   center: [number, number];
@@ -212,7 +211,7 @@ const SearchAndMapLayout = () => {
 
   return (
     <div className="flex flex-col h-screen">
-      <Navbar />
+      <DashBoardNavbar />
       <div className="grid grid-cols-3 h-screen gap-4 p-4 bg-gray-100">
         <div className="col-span-1 space-y-4">
           <Card>
