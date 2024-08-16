@@ -1,5 +1,7 @@
+
 import Image from "next/image";
 import Link from "next/link";
+import { Toaster } from "react-hot-toast";
 
 export default function Home() {
   return (
@@ -23,8 +25,7 @@ export default function Home() {
               className="dark:invert"
               width={100}
               height={24}
-              priority
-            />
+              priority />
           </a>
         </div>
       </div>
@@ -68,6 +69,8 @@ export default function Home() {
         </Link>
 
       </div>
+      <Toaster />
     </main>
+    
   );
 }

@@ -5,7 +5,6 @@ import React from 'react';
 const DashboardPage = () => {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        getRoutes();
     };
 
     return (
