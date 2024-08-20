@@ -13,7 +13,7 @@ export default function DashBoardNavbar() {
           </span>
         </Link>
         <div className="flex items-center">
-          <Link href="/home">
+          <Link href="/">
             <span className="px-4 py-2 hover:bg-violet-600 rounded-md flex items-center transition duration-300">
               <MapPin className="mr-2" size={18} />
               Home
@@ -25,7 +25,7 @@ export default function DashBoardNavbar() {
               Profile
             </span>
           </Link>
-          <Link href="/logout">
+          <Link href="/login">
             <span className="px-4 py-2 hover:bg-violet-600 rounded-md flex items-center transition duration-300">
               <LogOut className="mr-2" size={18} />
               Logout

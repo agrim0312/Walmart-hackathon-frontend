@@ -1,5 +1,5 @@
 import Footer from "@/components/footer";
-import LandingNavbar from "@/components/navbar";
+import LandingNavbar from "@/components/Navbar";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -20,7 +20,7 @@ export default function Home() {
               our advanced genetic algorithm.
             </p>
             <div className="flex space-x-4">
-              <Link href="/get-started">
+              <Link href="/login">
                 <span className="px-6 py-3 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition duration-300">
                   Get Started
                 </span>
