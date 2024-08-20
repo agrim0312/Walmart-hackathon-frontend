@@ -12,7 +12,7 @@ import { Truck } from "lucide-react";
 const RegisterPage: React.FC = () => {
   const router = useRouter();
 
-  const handleRegisterSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleRegisterSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const target = e.target as HTMLFormElement;
 
@@ -20,14 +20,16 @@ const RegisterPage: React.FC = () => {
     const email = target.elements.namedItem("email") as HTMLInputElement;
     const password = target.elements.namedItem("password") as HTMLInputElement;
 
-    createUser({
+    const response = await createUser({
       name: name.value,
       email: email.value,
       password: password.value,
     });
 
-    if (localStorage.getItem("jwtToken")) {
+    if (response.status === 200) {
       router.push("/dashboard");
+    } else {
+      router.push("/login");
     }
   };
 
