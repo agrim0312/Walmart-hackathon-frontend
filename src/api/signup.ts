@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const URL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:8000';
+const URL = process.env.NEXT_PUBLIC_SERVER_URL || 'https://walmart-hackathon-backend.onrender.com';
 
 export default async function createUser ({ name, email, password }:{
     name:string;
