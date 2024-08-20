@@ -1,11 +1,13 @@
 import axios from 'axios';
 
+const URL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:8000';
+
  export default async function LoginUser ({email, password}:{
   email: string;
   password: string;
  }){
   try {
-    const response = await axios.post('http://127.0.0.1:8000/token', new URLSearchParams({
+    const response = await axios.post(`${URL}/token`, new URLSearchParams({
       username: email,
       password: password,
     }), {

@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+const URL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:8000';
 
 async function getRoutes({data}:any) {
     try {
@@ -13,7 +14,7 @@ async function getRoutes({data}:any) {
         console.log('Token:', token);
 
         // Send POST request to the backend endpoint
-        const response = await axios.post('http://localhost:8000/get_routes', data, {
+        const response = await axios.post(`${URL}/get_routes`, data, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
